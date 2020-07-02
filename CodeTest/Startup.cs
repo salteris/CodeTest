@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -26,6 +27,12 @@ namespace CodeTest
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            //var hostname = Environment.GetEnvironmentVariable("SQLSERVER_HOST") ?? "localhost:1433";
+            //var password = Environment.GetEnvironmentVariable("SQLSERVER_SA_PASSWORD") ?? "Cod3T3st#";
+            var connString = $"Data Source=localhost, 1433; Database=CodeTest; User Id=sa;Password=Cod3T3st#";
+
+            services.AddDbContext<CodeTestContext>(options => options.UseSqlServer(connString).UseLazyLoadingProxies());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
