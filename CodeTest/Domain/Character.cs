@@ -14,17 +14,18 @@ namespace CodeTest.Domain
 
         public virtual int Level { get; private set; }
 
+        public virtual HitPoints HitPoints { get; private set; }
+
         private readonly List<Class> _classes = new List<Class>();
         public virtual IReadOnlyList<Class> Classes => _classes.ToList();
 
-        //private readonly List<Stat> _stats = new List<Stat>();
-        //public virtual IReadOnlyList<Stat> Stats => _stats.ToList();
+        public virtual Stats Stats { get; private set; }
 
-        //private readonly List<Item> _items = new List<Item>();
-        //public virtual IReadOnlyList<Item> Items => _items.ToList();
+        private readonly List<Item> _items = new List<Item>();
+        public virtual IReadOnlyList<Item> Items => _items.ToList();
 
-        //private readonly List<Defense> _defenses = new List<Defense>();
-        //public virtual IReadOnlyList<Defense> Defenses => _defenses.ToList();
+        private readonly List<Defense> _defenses = new List<Defense>();
+        public virtual IReadOnlyList<Defense> Defenses => _defenses.ToList();
 
         protected Character()
         {
@@ -32,30 +33,64 @@ namespace CodeTest.Domain
         }
 
         public Character(
-            Name name)
+            Name name,
+            int str,
+            int dex,
+            int con,
+            int wis,
+            int _int, 
+            int cha)
         {
             Name = name;
+            Stats = Stats.SetStats(str, dex, con, wis, _int, cha).Value;
+            HitPoints = HitPoints.NewCharacter().Value;
         }
 
         public Result<int> AddClass(Class _class)
         {
             if (_classes.Any(x => x.Name == _class.Name)){
-                _classes.Find(x => x.Name == _class.Name).AddLevel();
+                CalculateNewMaxHitPoints(_class);
+                _classes.Find(x => x.Name == _class.Name).AddLevel(_class.ClassLevel);
             } else
             {
+                CalculateNewMaxHitPoints(_class);
                 _classes.Add(_class);
             }
 
             return Result.Success(_classes.Find(x => x.Name == _class.Name).ClassLevel);
         }
 
-        public Result<int> GetHitPoints()
+        public void AddItem(Item item)
         {
-            if (_classes.Count() == 0)
-                return Result.Failure<int>("Character has no classes");
+            if (item.Modifier.AffectedObject == AffectedObject.Stats && item.Modifier.AffectedValue == "constitution")
+                HitPoints.AddToMax((int)Math.Floor((double)(item.Modifier.Value / 2)) * Level);
 
-            //return _classes.Select(x => x.HitDiceValue)
-            return Result.Success(10);
+            _items.Add(item);
         }
+
+        public void AddDefense(Defense defense)
+        {
+            _defenses.Add(defense);
+        }
+
+        public void CalculateLevel()
+        {
+            var classLevels = Classes.Sum(e => e.ClassLevel);
+
+            Level = classLevels;
+        }
+
+        public void CalculateNewMaxHitPoints(Class _class)
+        {
+            var addedCon = 0;
+            if(_items != null)
+            {
+                addedCon = _items.Where(e => e.Modifier.AffectedObject == AffectedObject.Stats && e.Modifier.AffectedValue == "constitution").Sum(e => e.Modifier.Value);
+            }
+            Random rand = new Random();
+            var rolledHD = rand.Next(1, _class.HitDiceValue);
+            HitPoints.AddToMax((rolledHD + (int)Math.Floor((double)((Stats.Constitution + addedCon) - 10)/2)) * _class.ClassLevel);
+        }
+
     }
 }

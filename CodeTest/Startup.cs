@@ -27,10 +27,10 @@ namespace CodeTest
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-
+            services.AddSwaggerGen();
             //var hostname = Environment.GetEnvironmentVariable("SQLSERVER_HOST") ?? "localhost:1433";
             //var password = Environment.GetEnvironmentVariable("SQLSERVER_SA_PASSWORD") ?? "Cod3T3st#";
-            var connString = $"Data Source=localhost, 1433; Database=CodeTest; User Id=sa;Password=Cod3T3st#";
+            var connString = $"Server=GW-DEV01\\SQLEXPRESS; Database=CodeTest; Trusted_Connection=True";
 
             services.AddDbContext<CodeTestContext>(options => options.UseSqlServer(connString).UseLazyLoadingProxies());
         }
@@ -42,6 +42,13 @@ namespace CodeTest
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseSwagger();
+
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Code Test API V1");
+            });
 
             app.UseHttpsRedirection();
 

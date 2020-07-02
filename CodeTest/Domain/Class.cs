@@ -1,15 +1,19 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Authorization.Infrastructure;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace CodeTest.Domain
 {
     public class Class : Entity
     {
-        public ClassName Name { get; }
-        public DiceValue HitDiceValue { get; }
+        public string Name { get; }
+        public int HitDiceValue { get; }
         public int ClassLevel { get; private set; }
+        [JsonIgnore]
         public virtual Character Character { get; }
 
 
@@ -19,41 +23,59 @@ namespace CodeTest.Domain
         }
 
         public Class(
-                ClassName name,
-                DiceValue hitDiceValue,
+                string name,
                 int classLevel
             ): this()
         {
             Name = name;
-            HitDiceValue = hitDiceValue;
+            switch (name) 
+            {
+                case "Fighter": 
+                    HitDiceValue = 10;
+                    break;
+                case "Cleric":
+                    HitDiceValue = 8;
+                    break;
+                case "Bard":
+                    HitDiceValue = 8;
+                    break;
+                case "Druid":
+                    HitDiceValue = 8;
+                    break;
+                case "Monk":
+                    HitDiceValue = 8;
+                    break;
+                case "Paladin":
+                    HitDiceValue = 10;
+                    break;
+                case "Ranger":
+                    HitDiceValue = 10;
+                    break;
+                case "Rogue":
+                    HitDiceValue = 8;
+                    break;
+                case "Sorcerer":
+                    HitDiceValue = 6;
+                    break;
+                case "Warlock":
+                    HitDiceValue = 8;
+                    break;
+                case "Wizard":
+                    HitDiceValue = 6;
+                    break;
+                case "Barbarian":
+                    HitDiceValue = 12;
+                    break;
+                default:
+                    break;
+            }
+
             ClassLevel = classLevel;
         }
 
-        public void AddLevel()
+        public void AddLevel(int level)
         {
-            ClassLevel++;
+            ClassLevel+=level;
         }
-    }
-
-    public enum ClassName
-    {
-        Fighter = 0,
-        Cleric = 1,
-        Bard = 2,
-        Druid = 3,
-        Ranger = 4,
-        Sorcerer = 5,
-        Warlock = 6,
-        Wizard = 7,
-        Barbarian = 8
-    }
-
-    public enum DiceValue
-    {
-        d4 = 4,
-        d6 = 6,
-        d8 = 8,
-        d10 = 10,
-        d12 = 12
     }
 }
