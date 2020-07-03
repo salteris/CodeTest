@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace CodeTest.Domain
@@ -23,6 +24,8 @@ namespace CodeTest.Domain
                 return null;
 
             _context.Entry(character).Collection(x => x.Classes).Load();
+            _context.Entry(character).Collection(x => x.Defenses).Load();
+            _context.Entry(character).Collection(x => x.Items).Load();
 
             return character;
         }

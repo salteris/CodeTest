@@ -46,7 +46,7 @@ namespace CodeTest.Domain
             HitPoints = HitPoints.NewCharacter().Value;
         }
 
-        public Result<int> AddClass(Class _class)
+        public void AddClass(Class _class)
         {
             if (_classes.Any(x => x.Name == _class.Name)){
                 CalculateNewMaxHitPoints(_class);
@@ -57,7 +57,6 @@ namespace CodeTest.Domain
                 _classes.Add(_class);
             }
 
-            return Result.Success(_classes.Find(x => x.Name == _class.Name).ClassLevel);
         }
 
         public void AddItem(Item item)
@@ -88,8 +87,13 @@ namespace CodeTest.Domain
                 addedCon = _items.Where(e => e.Modifier.AffectedObject == AffectedObject.Stats && e.Modifier.AffectedValue == "constitution").Sum(e => e.Modifier.Value);
             }
             Random rand = new Random();
-            var rolledHD = rand.Next(1, _class.HitDiceValue);
-            HitPoints.AddToMax((rolledHD + (int)Math.Floor((double)((Stats.Constitution + addedCon) - 10)/2)) * _class.ClassLevel);
+            var rolledHp = rand.Next(1, _class.HitDiceValue);
+
+            var conbonus = (int)Math.Floor((double)((Stats.Constitution + addedCon) - 10) / 2);
+
+            var addingHp = (rolledHp + conbonus) * _class.ClassLevel;
+
+            HitPoints.AddToMax(addingHp);
         }
 
     }

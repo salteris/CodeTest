@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using System.Security.Permissions;
 using System.Threading.Tasks;
 using CodeTest.Domain;
 using CSharpFunctionalExtensions;
@@ -70,7 +71,7 @@ namespace CodeTest.Controllers
             if (input.ClassLevel < 1)
                 return BadRequest("New Class level must be greater than 0.");
 
-            var character = _context.Characters.Find(input.CharacterId);
+            var character = _repository.GetById(input.CharacterId);
             if (character == null)
                 return BadRequest("Character does not exist");
 
@@ -163,6 +164,39 @@ namespace CodeTest.Controllers
             return Ok(character);
         }
 
+        [HttpGet("Heal Character")]
+        public IActionResult Heal([FromQuery]int characterId, [FromQuery]int healing)
+        {
+            if (healing < 0)
+                return BadRequest("Healing must be positive.");
+
+            var character = _repository.GetById(characterId);
+            if (character == null)
+                return BadRequest("Character does not exist.");
+
+            character.HitPoints.Heal(healing);
+
+            _context.SaveChanges();
+
+            return Ok(character);
+        }
+
+        [HttpGet("Add Temp hit points to Character")]
+        public IActionResult AddTemp([FromQuery]int characterId, [FromQuery]int temp)
+        {
+            if (temp < 0)
+                return BadRequest("Healing must be positive.");
+
+            var character = _repository.GetById(characterId);
+            if (character == null)
+                return BadRequest("Character does not exist.");
+
+            character.HitPoints.AddTemp(temp);
+
+            _context.SaveChanges();
+
+            return Ok(character);
+        }
 
         [HttpGet("Reset Characters' Hitpoints")]
         public IActionResult ResetHitPoints([FromQuery]int characterId)
@@ -175,7 +209,7 @@ namespace CodeTest.Controllers
 
             _context.SaveChanges();
 
-            return Ok("Hitpoints reset");
+            return Ok(character);
         }
     }
 }

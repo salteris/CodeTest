@@ -30,7 +30,7 @@ namespace CodeTest
             services.AddSwaggerGen();
             //var hostname = Environment.GetEnvironmentVariable("SQLSERVER_HOST") ?? "localhost:1433";
             //var password = Environment.GetEnvironmentVariable("SQLSERVER_SA_PASSWORD") ?? "Cod3T3st#";
-            var connString = $"Server=GW-DEV01\\SQLEXPRESS; Database=CodeTest; Trusted_Connection=True";
+            var connString = $"Server=localhost\\SQLEXPRESS; Database=CodeTest; Trusted_Connection=True";
 
             services.AddDbContext<CodeTestContext>(options => options.UseSqlServer(connString).UseLazyLoadingProxies());
         }

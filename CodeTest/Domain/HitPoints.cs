@@ -49,22 +49,36 @@ namespace CodeTest.Domain
 
         public void TakeDamage(int damage)
         {
-            int newDamage = 0;
             if(Temp > 0)
             {
-                newDamage = damage - Temp;
+                Temp -= damage;
             }
 
-            if (newDamage > 0)
+            if (Temp < 0)
             {
-                Temp -= damage;
-            } else
-            {
+                Current += Temp;
                 Temp = 0;
-                Current -= newDamage;
                 if (Current < 0)
                     Current = 0;
             }
+            else 
+            {
+                Current -= damage;
+                if (Current < 0)
+                    Current = 0;
+            }
+        }
+
+        public void Heal(int healing)
+        {
+            Current += healing;
+            if (Current > Max)
+                Current = Max;
+        }
+
+        public void AddTemp(int temp)
+        {
+            Temp = temp;
         }
 
         protected override IEnumerable<object> GetEqualityComponents()
