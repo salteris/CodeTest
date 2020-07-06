@@ -62,7 +62,7 @@ namespace CodeTest.Domain
         public void AddItem(Item item)
         {
             if (item.Modifier.AffectedObject == AffectedObject.Stats && item.Modifier.AffectedValue == "constitution")
-                HitPoints.AddToMax((int)Math.Floor((double)(item.Modifier.Value / 2)) * Level);
+                HitPoints.AddToMax((int)Math.Floor((item.Modifier.Value / 2.0)) * Level);
 
             _items.Add(item);
         }
@@ -89,7 +89,7 @@ namespace CodeTest.Domain
             Random rand = new Random();
             var rolledHp = rand.Next(1, _class.HitDiceValue);
 
-            var conbonus = (int)Math.Floor((double)((Stats.Constitution + addedCon) - 10) / 2);
+            var conbonus = (int)Math.Floor(((Stats.Constitution + addedCon) - 10) / 2.0);
 
             var addingHp = (rolledHp + conbonus) * _class.ClassLevel;
 
