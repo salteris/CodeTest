@@ -185,7 +185,7 @@ namespace CodeTest.Controllers
         public IActionResult AddTemp([FromQuery]int characterId, [FromQuery]int temp)
         {
             if (temp < 0)
-                return BadRequest("Healing must be positive.");
+                return BadRequest("Temp hit points must be positive.");
 
             var character = _repository.GetById(characterId);
             if (character == null)
